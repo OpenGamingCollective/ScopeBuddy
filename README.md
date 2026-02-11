@@ -220,6 +220,14 @@ home.packages = [
 ];
 ```
 
+### Fedora and Derivatives
+
+Install the [Terra Repository](https://terra.fyralabs.com/), then install ScopeBuddy:
+
+```bash
+dnf install ScopeBuddy
+```
+
 ## GUI Configuration
 
 TealMango in the Bazzite community has made a GUI tool to configure scopebuddy.
