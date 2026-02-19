@@ -228,6 +228,23 @@ Install the [Terra Repository](https://terra.fyralabs.com/), then install ScopeB
 dnf install ScopeBuddy
 ```
 
+### Arch Linux
+
+ScopeBuddy is available in the Arch User Repository (AUR) via the [scopebuddy-git](https://aur.archlinux.org/packages/scopebuddy-git)
+package. Using an AUR helper such as [yay](https://github.com/Jguer/yay):
+
+```bash
+yay -S scopebuddy-git
+```
+
+Or, manually:
+
+```bash
+git clone https://aur.archlinux.org/scopebuddy-git.git
+cd scopebuddy-git
+makepkg -si
+```
+
 ## GUI Configuration
 
 TealMango in the Bazzite community has made a GUI tool to configure scopebuddy.
