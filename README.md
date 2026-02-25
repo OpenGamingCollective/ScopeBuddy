@@ -216,7 +216,7 @@ Then add the package:
 
 ```bash
 home.packages = [
-  inputs.scopebuddy.packages.${pkgs.system}.default
+  inputs.scopebuddy.packages.${pkgs.stdenv.hostPlatform.system}.default
 ];
 ```
 
