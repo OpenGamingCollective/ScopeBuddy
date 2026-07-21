@@ -3,44 +3,46 @@
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs }:
-  let
-    systems = [ "x86_64-linux" "aarch64-linux" ];
-    forAllSystems = nixpkgs.lib.genAttrs systems;
-  in
-  {
-    packages = forAllSystems (system:
-      let
-        pkgs = import nixpkgs { inherit system; };
-      in {
-        default = pkgs.stdenvNoCC.mkDerivation {
-          pname = "scopebuddy";
-          version = "git";
-          src = self;
+  outputs =
+    { self, nixpkgs }:
+    let
+      inherit (nixpkgs.lib) genAttrs getExe;
 
-          nativeBuildInputs = [ pkgs.makeWrapper ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
-          installPhase = ''
-            install -Dm755 bin/scopebuddy $out/bin/scopebuddy
-            ln -s $out/bin/scopebuddy $out/bin/scb
-
-            wrapProgram $out/bin/scopebuddy \
-              --prefix PATH : ${pkgs.lib.makeBinPath [
-                pkgs.gamescope
-                pkgs.perl
-                pkgs.jq
-                pkgs.wlr-randr
-              ]}
-          '';
-        };
-      }
-    );
-
-    apps = forAllSystems (system: {
-      default = {
-        type = "app";
-        program = "${self.packages.${system}.default}/bin/scopebuddy";
+      forEachSystem =
+        perSystem:
+        genAttrs systems (
+          system:
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+          in
+          perSystem { inherit pkgs system; }
+        );
+    in
+    {
+      overlays.default = final: prev: {
+        scopebuddy = final.callPackage ./nix/package.nix { };
       };
-    });
-  };
+
+      packages = forEachSystem (
+        { pkgs, ... }:
+        {
+          default = pkgs.callPackage ./nix/package.nix { };
+        }
+      );
+
+      apps = forEachSystem (
+        { system, ... }:
+        {
+          default = {
+            type = "app";
+            program = getExe self.packages.${system}.default;
+          };
+        }
+      );
+    };
 }
