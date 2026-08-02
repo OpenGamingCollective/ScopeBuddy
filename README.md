@@ -166,6 +166,7 @@ Alternatively, `SCB_NOSCOPE` can be left out of scb.conf and set in either a gam
 * bash
 * [gamescope](https://github.com/ValveSoftware/gamescope)
 * perl
+* awk (for SCB_GetGameDir function)
 
 Optional for `$SCB_AUTO_RES`/`$SCB_AUTO_HDR`/`$SCB_AUTO_VRR`:
 
