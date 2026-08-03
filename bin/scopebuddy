@@ -19,7 +19,7 @@ set -eo pipefail
 ##########
 # Globals
 ##########
-SCB_VER="1.4.0"
+SCB_VER="1.5.0"
 
 gamescope_opts=""
 command=""
@@ -418,6 +418,35 @@ nonsteam_appid_detect() {
 
     # Return the detected APPID
     echo "$AUTO_APPID"
+}
+
+# Function to get the gamedir from %command%
+SCB_GetGameDir() {
+    local command="$1"
+    local GAMEDIR
+
+    # Get the game directory from %command%
+    # shellcheck disable=SC2086
+    cmdARGS=$(echo $command | awk -F '" "' '{ print NF }')
+    # Loop through each argument by counting through the indexes
+    for ((i = 1; i <= cmdARGS; i++))
+    do
+        local ARG
+        # Grab the current argument
+        # shellcheck disable=SC2086
+        ARG=$(echo $command | awk -F '" "' -v i="$i" '{ print $i }')
+        # If we found "waitforexitandrun"
+        if [ "$ARG" == "waitforexitandrun" ]; then
+            # Increase i by 1 and grab the game directory by removing the binary from the string then exit the loop early
+            i=$(($i+1))
+            # shellcheck disable=SC2086
+            GAMEDIR=$(echo $command | awk -F '" "' -v i="$i" '{ print $i }' | awk -F'/' '{for(i=1;i<NF;i++) printf "%s%s", $i, i==NF-1 ? "" : "/"}')
+            break
+        fi
+    done
+
+    # Return the game directory
+    echo "$GAMEDIR"
 }
 
 #######
