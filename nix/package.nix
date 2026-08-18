@@ -3,6 +3,7 @@
   makeWrapper,
   lib,
   gamescope,
+  xwayland,
   perl,
   jq,
   wlr-randr,
@@ -23,6 +24,7 @@ stdenvNoCC.mkDerivation {
       --prefix PATH : ${
         lib.makeBinPath [
           gamescope
+          xwayland
           perl
           jq
           wlr-randr
