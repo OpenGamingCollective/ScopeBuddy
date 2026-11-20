@@ -377,8 +377,6 @@ wlr_get_primary_display() {
         echo "$gdctl_output" | jq -c --arg prefer "$prefer" '
             .[] | select(.name == $prefer)
         '
-    else
-        show_error_dialog "Wlroots Error" "Primary display not supported!" 1
     fi
 }
 # Selectively extracts mode info from wlr-randr for use with SCB_AUTO_*.
@@ -598,6 +596,22 @@ https://github.com/HikariKnight/ScopeBuddy#auto-detection-features-scb_auto_"
         show_error_dialog "ScopeBuddy Auto-Detection Error" "$ERROR_MSG" 1
     fi
 
+    # SCB_AUTO_HDR is not checked as HDR detection is not implemented for Wlroots
+    if [ "$SCB_DETECT" = "wlroots" ] && [ -z "$PREFER_OUTPUT" ] && \
+       [ $(( SCB_AUTO_RES + SCB_AUTO_VRR + SCB_AUTO_REFRESH + SCB_AUTO_FRAME_LIMIT )) -gt 0 ]; then
+        WLR_OUTPUTS=$("$WLR_RANDR_COMMAND" --json | jq -r '[.[] | select(.enabled) | .name] | join(", ")')
+        ERROR_MSG="Wlroots compositors have no primary display, so auto-detection needs the output to be set with gamescope's -O or --prefer-output, e.g.:
+  SCB_GAMESCOPE_ARGS=\"-O <output> ...\" in your ScopeBuddy configuration, or
+  scopebuddy -O <output> -- %command%
+
+Available outputs: ${WLR_OUTPUTS}
+
+For more information, see:
+https://github.com/OpenGamingCollective/ScopeBuddy#wlroots-compositor-support"
+
+        show_error_dialog "ScopeBuddy Auto-Detection Error" "$ERROR_MSG" 1
+    fi
+
     # Use the detected backend for SCB_AUTO_* checks
     if [ "$SCB_AUTO_RES" -eq 1 ]; then
         if [ "$SCB_DETECT" = "kde" ]; then
@@ -667,8 +681,6 @@ https://github.com/HikariKnight/ScopeBuddy#auto-detection-features-scb_auto_"
                 export PROTON_ENABLE_HDR=1
             fi
         elif [ "$SCB_DETECT" = "wlroots" ]; then
-            # Check if HDR is enabled on Wlroots
-            CONNECTOR=$(wlr_get_primary_display "$PREFER_OUTPUT" 2>/dev/null)
             # TODO: Not supported; stub for future support
             if [ "$AUTO_WAYLAND_HDR_ENABLE" -eq 1 ]; then
                 export PROTON_ENABLE_WAYLAND=1
