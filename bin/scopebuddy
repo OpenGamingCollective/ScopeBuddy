@@ -212,8 +212,10 @@ wlr_auto_args_preflight() {
     if ! command -v jq >/dev/null 2>&1; then
         return 1
     fi
-    # Check that wlr-randr is available
+    # Check that wlr-randr is available and the compositor supports wlr-output-management
     if ! command -v "$WLR_RANDR_COMMAND" >/dev/null 2>&1; then
+        return 1
+    elif ! "$WLR_RANDR_COMMAND" --json >/dev/null 2>&1; then
         return 1
     fi
     return 0
@@ -585,7 +587,7 @@ Please disable these flags in your ScopeBuddy configuration.
 Required dependencies:
   • KDE Plasma: kscreen-doctor and jq
   • GNOME: gdctl (with --format=json) or gnome-randr
-  • Wlroots: wlr-randr (with --json)
+  • Wlroots (compositor must support wlr-output-management): wlr-randr (with --json) and jq
 
 Current desktop: ${XDG_CURRENT_DESKTOP:-not set}
 Session: ${DESKTOP_SESSION:-not set}
