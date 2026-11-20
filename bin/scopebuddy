@@ -299,9 +299,9 @@ gnome_randr_get_primary_display() {
             /^logical monitor [0-9]+:/ { in_monitor=1; primary=0; next }
             in_monitor && /primary: yes/ { primary=1; next }
             in_monitor && /associated physical monitors:/ { in_physical=1; next }
-            in_physical && primary && /^\t[A-Z]/ {
+            in_physical && primary && /^\t[A-Za-z0-9-]/ {
                 # Extract the connector name (first field after tab)
-                match($0, /^\t([A-Z0-9-]+)/, arr)
+                match($0, /^\t([A-Za-z0-9-]+)/, arr)
                 print arr[1]
                 exit
             }
