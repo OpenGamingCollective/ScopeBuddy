@@ -77,10 +77,6 @@ SCB_NESTEDFIX=${SCB_NESTEDFIX:-1}
 # By default we will never be in gamemode
 SCB_GAMEMODE=0
 
-# Helper to determine get if any of the SCB_AUTO_* features are enabled
-# 0 = none enabled, >0 means at least one is enabled
-SCB_ANY_AUTO_FEAT_ENABLED=$(( SCB_AUTO_RES + SCB_AUTO_HDR + SCB_AUTO_VRR + SCB_AUTO_REFRESH + SCB_AUTO_FRAME_LIMIT ))
-
 ###################
 # Helper functions
 ###################
@@ -537,6 +533,11 @@ if [ -f "$SCB_CONFIGFILE" ]; then
         # shellcheck disable=SC1090
         source "$SCB_CONFIGDIR/AppID/${SCB_APPID}.conf"
     fi
+
+    # Helper to determine if any of the SCB_AUTO_* features are enabled
+    # 0 = none enabled, >0 means at least one is enabled
+    # Computed here as the configs may set SCB_AUTO_*
+    SCB_ANY_AUTO_FEAT_ENABLED=$(( SCB_AUTO_RES + SCB_AUTO_HDR + SCB_AUTO_VRR + SCB_AUTO_REFRESH + SCB_AUTO_FRAME_LIMIT ))
 
     # If the user has supplied ANY args to gamescope, do not load the SCB_GAMESCOPE_ARGS
     if [ -z "$gamescope_opts" ] && [ "$SCB_APPENDMODE" == 0 ]; then
